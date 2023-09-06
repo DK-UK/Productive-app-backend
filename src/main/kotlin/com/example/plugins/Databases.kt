@@ -12,7 +12,6 @@ import kotlinx.coroutines.*
 
 fun Application.configureDatabases() {
     val dbConnection: Connection = connectToPostgres(embedded = false)
-
     val taskService = TaskService(dbConnection)
 
     routing {

@@ -10,7 +10,7 @@ import java.sql.Statement
 class TaskService(private val connection: Connection) {
     companion object {
 
-        private const val CREATE_TABLE_TASK = """CREATE TABLE TASK (ID SERIAL PRIMARY KEY,
+        private const val CREATE_TABLE_TASK = """CREATE TABLE TASK IF NOT EXISTS (ID SERIAL PRIMARY KEY,
             UNIQUE_ID BIGINT UNIQUE NOT NULL DEFAULT 0,
             TYPE VARCHAR(10),
             TITLE VARCHAR(255),
@@ -27,6 +27,7 @@ class TaskService(private val connection: Connection) {
                 ", START_DATE = EXCLUDED.START_DATE, END_DATE = EXCLUDED.END_DATE, REMINDER_DATE = EXCLUDED.REMINDER_DATE, CREATED_AT = EXCLUDED.CREATED_AT, COMPLETED_AT = EXCLUDED.COMPLETED_AT;"
         private const val DELETE_TASK = "DELETE FROM TASK WHERE UNIQUE_ID = ?;"
 
+/*
         private const val CREATE_TABLE_EVENT = """CREATE TABLE EVENT (ID SERIAL PRIMARY KEY,
             UNIQUE_ID BIGINT UNIQUE NOT NULL DEFAULT 0,
             TYPE VARCHAR(10),
@@ -58,13 +59,14 @@ class TaskService(private val connection: Connection) {
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (UNIQUE_ID) DO UPDATE SET TYPE = EXCLUDED.TYPE, TITLE = EXCLUDED.TITLE, DESCRIPTION = EXCLUDED.DESCRIPTION, IS_SUB_TASK_OF = EXCLUDED.IS_SUB_TASK_OF, START_DATE = EXCLUDED.START_DATE" +
                 ", END_DATE = EXCLUDED.END_DATE, REMINDER_DATE = EXCLUDED.REMINDER_DATE, CREATED_AT = EXCLUDED.CREATED_AT, COMPLETED_AT = EXCLUDED.COMPLETED_AT;"
         private const val DELETE_GOAL = "DELETE FROM GOAL WHERE UNIQUE_ID = ?;"
+*/
 
         private const val GET_ALL_TASKS = "SELECT * FROM TASK;"
     }
 
     init {
-//        val statement = connection.createStatement()
-//        statement.executeUpdate(CREATE_TABLE_TASK)
+        val statement = connection.createStatement()
+        statement.executeUpdate(CREATE_TABLE_TASK)
     }
 
 
@@ -92,6 +94,8 @@ class TaskService(private val connection: Connection) {
             throw Exception("Unable to retrieve the id of the newly inserted task")
         }
     }
+
+/*
 
     suspend fun insertOrUpdateEvent(event : ExternalModel) : Int = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(INSERT_OR_UPDATE_EVENT, Statement.RETURN_GENERATED_KEYS)
@@ -137,6 +141,7 @@ class TaskService(private val connection: Connection) {
             throw Exception("Unable to retrieve the id of the newly inserted event")
         }
     }
+*/
 
     suspend fun getAllTasks(): List<ExternalModel> = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(GET_ALL_TASKS)
