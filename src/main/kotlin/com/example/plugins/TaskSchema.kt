@@ -63,8 +63,8 @@ class TaskService(private val connection: Connection) {
     }
 
     init {
-        val statement = connection.createStatement()
-        statement.executeUpdate(CREATE_TABLE_TASK)
+//        val statement = connection.createStatement()
+//        statement.executeUpdate(CREATE_TABLE_TASK)
     }
 
 
@@ -160,5 +160,11 @@ class TaskService(private val connection: Connection) {
             list.add(externalModel)
         }
         return@withContext list
+    }
+
+    suspend fun deleteTask(unique_id : Long) = withContext(Dispatchers.IO) {
+        val statement = connection.prepareStatement(DELETE_TASK)
+        statement.setLong(1, unique_id)
+        return@withContext statement.executeUpdate()
     }
 }

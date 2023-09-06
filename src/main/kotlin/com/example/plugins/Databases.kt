@@ -6,6 +6,7 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.util.*
 import java.sql.*
 import kotlinx.coroutines.*
 
@@ -15,38 +16,38 @@ fun Application.configureDatabases() {
     val taskService = TaskService(dbConnection)
 
     routing {
-        get("/tasks/add"){
-           val id =  taskService.insertOrUpdateTask(ExternalModel(
-                unique_id = 546546546346,
-                title = "Hello world",
-                description = "This is a testing message",
-                type = "Goal",
-                due_date = 0,
-                reminder_date = 0,
-                created_at = 0,
-                completed_at = 0
-            ))
-            application.log.error("ID : ${id}")
-
-            println("Dhaval : $id")
-            call.respondText(text = "${id}")
+        post("/tasks/add") {
+            var statusCode = HttpStatusCode.Accepted
+            try {
+                val taskList = call.receive<List<ExternalModel>>()
+                taskList.forEach {
+                    if (it.is_deleted){
+                        val id = taskService.deleteTask(it.unique_id)
+                        println("deleted : ${id}")
+                    }
+                    else{
+                        val inserted = taskService.insertOrUpdateTask(it)
+                        println("Inserted : ${inserted}")
+                    }
+                }
+            }
+            catch (e : Exception){
+                statusCode = HttpStatusCode.Conflict
+                println("error : ${e.toString()}")
+            }
+            call.respond(statusCode)
         }
 
-        // Read city
-        get("/tasks") {
+        get("/tasks/all") {
 
-//            call.respondText("${dbConnection.clientInfo}")
             try {
-                val city = taskService.getAllTasks()
-                application.log.error("task : ${city}")
-
-                call.respond(HttpStatusCode.OK, city)
+                val allTasks = taskService.getAllTasks()
+                println("task : ${allTasks}")
+                call.respond(HttpStatusCode.OK, allTasks)
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.NotFound)
             }
         }
-        // Update city
-
     }
 }
 
@@ -76,9 +77,9 @@ fun Application.connectToPostgres(embedded: Boolean): Connection {
     if (embedded) {
         return DriverManager.getConnection("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "root", "")
     } else {
-        val url = "jdbc:postgresql://localhost:5432/testing" /*environment.config.property("postgres.url").getString()*/
-        val user = "postgres" /*environment.config.property("postgres.user").getString()*/
-        val password = "12345" /*environment.config.property("postgres.password").getString()*/
+        val url = System.getenv("url") //environment.config.property("url").getString()
+        val user = System.getenv("username") // environment.config.property("username").getString()
+        val password = System.getenv("password") // environment.config.property("password").getString()
 
         return DriverManager.getConnection(url, user, password)
     }
