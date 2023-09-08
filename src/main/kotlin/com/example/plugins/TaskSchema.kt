@@ -10,7 +10,7 @@ import java.sql.Statement
 class TaskService(private val connection: Connection) {
     companion object {
 
-        private const val CREATE_TABLE_TASK = """CREATE TABLE TASK IF NOT EXISTS (ID SERIAL PRIMARY KEY,
+        private const val CREATE_TABLE_TASK = """CREATE TABLE IF NOT EXISTS TASK (ID SERIAL PRIMARY KEY,
             UNIQUE_ID BIGINT UNIQUE NOT NULL DEFAULT 0,
             TYPE VARCHAR(10),
             TITLE VARCHAR(255),
