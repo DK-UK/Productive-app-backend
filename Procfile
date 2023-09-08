@@ -1,0 +1,1 @@
+web: java -jar build/libs/com.example.productive-app-all.jar
