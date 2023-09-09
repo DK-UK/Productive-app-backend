@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.konan.properties.Properties
 
 val ktor_version: String by project
 val kotlin_version: String by project
@@ -13,6 +14,9 @@ plugins {
 
 group = "com.example"
 version = "0.0.1"
+
+// postgres credentials
+
 
 application {
     mainClass.set("com.example.ApplicationKt")

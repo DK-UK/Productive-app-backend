@@ -76,10 +76,11 @@ fun Application.connectToPostgres(embedded: Boolean): Connection {
     if (embedded) {
         return DriverManager.getConnection("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "root", "")
     } else {
-        val url = System.getenv("url") //environment.config.property("url").getString()
-        val user = System.getenv("username") // environment.config.property("username").getString()
-        val password = System.getenv("password") // environment.config.property("password").getString()
+        val url = System.getenv("url") /*"jdbc:postgresql://localhost:5432/testing"*/ /*environment.config.property("url").getString()*/ //
+        val user = System.getenv("username") //"postgres" /*environment.config.property("username").getString()*/ //  //  //
+        val password = System.getenv("password") // "12345" /*environment.config.property("password").getString()*/ //  //  //
 
+        // password=12345;url=jdbc:postgresql://localhost:5432/testing;username=postgres
         return DriverManager.getConnection(url, user, password)
     }
 }
