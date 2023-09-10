@@ -16,6 +16,7 @@ group = "com.example"
 version = "0.0.1"
 
 // postgres credentials
+val localProperties = Properties()
 
 
 application {
