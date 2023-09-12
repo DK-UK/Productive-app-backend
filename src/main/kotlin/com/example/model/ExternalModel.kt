@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 data class ExternalModel(
     val id : Int = 0,
     var unique_id : Long = 0,
+    var email : String = "",
     var type : String = "",
     var title : String = "",
     var description : String = "",
@@ -18,43 +19,4 @@ data class ExternalModel(
     var completed_at : Long = 0,
     var is_updated : Boolean = false,
     var is_deleted : Boolean = false
-)
-
-fun ExternalModel.toTask() = Task(
-    id = this.id,
-    unique_id = this.unique_id,
-    type = this.type,
-    title = this.title,
-    description = this.description,
-    is_sub_task_of = this.is_sub_task_of,
-    due_date = this.due_date,
-    reminder_date = this.reminder_date,
-    created_at = this.created_at,
-    completed_at = this.completed_at
-)
-
-fun ExternalModel.toEvent() = Event(
-    id = this.id,
-    unique_id = this.unique_id,
-    type = this.type,
-    title = this.title,
-    description = this.description,
-    start_date = this.start_date,
-    end_date = this.end_date,
-    reminder_date = this.reminder_date,
-    created_at = this.created_at,
-    completed_at = this.completed_at
-)
-
-fun ExternalModel.toGoal() = Goal(
-    id = this.id,
-    unique_id = this.unique_id,
-    type = this.type,
-    title = this.title,
-    description = this.description,
-    start_date = this.start_date,
-    end_date = this.end_date,
-    reminder_date = this.reminder_date,
-    created_at = this.created_at,
-    completed_at = this.completed_at
 )

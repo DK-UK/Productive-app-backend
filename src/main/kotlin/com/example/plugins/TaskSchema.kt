@@ -12,6 +12,7 @@ class TaskService(private val connection: Connection) {
 
         private const val CREATE_TABLE_TASK = """CREATE TABLE IF NOT EXISTS TASK (ID SERIAL PRIMARY KEY,
             UNIQUE_ID BIGINT UNIQUE NOT NULL DEFAULT 0,
+            EMAIL VARCHAR(50) NOT NULL DEFAULT '', 
             TYPE VARCHAR(10),
             TITLE VARCHAR(255),
             DESCRIPTION VARCHAR(255),
@@ -22,8 +23,8 @@ class TaskService(private val connection: Connection) {
             REMINDER_DATE BIGINT NOT NULL DEFAULT 0,
             CREATED_AT BIGINT NOT NULL DEFAULT 0,
             COMPLETED_AT BIGINT NOT NULL DEFAULT 0);"""
-        private const val INSERT_OR_UPDATE_TASK = "INSERT INTO TASK (UNIQUE_ID, TYPE, TITLE, DESCRIPTION, IS_SUB_TASK_OF, DUE_DATE, START_DATE, END_DATE, REMINDER_DATE, CREATED_AT, COMPLETED_AT) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (UNIQUE_ID) DO UPDATE SET TYPE = EXCLUDED.TYPE, TITLE = EXCLUDED.TITLE, DESCRIPTION = EXCLUDED.DESCRIPTION, IS_SUB_TASK_OF = EXCLUDED.IS_SUB_TASK_OF, DUE_DATE = EXCLUDED.DUE_DATE" +
+        private const val INSERT_OR_UPDATE_TASK = "INSERT INTO TASK (UNIQUE_ID, EMAIL, TYPE, TITLE, DESCRIPTION, IS_SUB_TASK_OF, DUE_DATE, START_DATE, END_DATE, REMINDER_DATE, CREATED_AT, COMPLETED_AT) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (UNIQUE_ID) DO UPDATE SET EMAIL = EXCLUDED.EMAIL, TYPE = EXCLUDED.TYPE, TITLE = EXCLUDED.TITLE, DESCRIPTION = EXCLUDED.DESCRIPTION, IS_SUB_TASK_OF = EXCLUDED.IS_SUB_TASK_OF, DUE_DATE = EXCLUDED.DUE_DATE" +
                 ", START_DATE = EXCLUDED.START_DATE, END_DATE = EXCLUDED.END_DATE, REMINDER_DATE = EXCLUDED.REMINDER_DATE, CREATED_AT = EXCLUDED.CREATED_AT, COMPLETED_AT = EXCLUDED.COMPLETED_AT;"
         private const val DELETE_TASK = "DELETE FROM TASK WHERE UNIQUE_ID = ?;"
 
@@ -74,16 +75,17 @@ class TaskService(private val connection: Connection) {
     suspend fun insertOrUpdateTask(task : ExternalModel): Int = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(INSERT_OR_UPDATE_TASK, Statement.RETURN_GENERATED_KEYS)
         statement.setLong(1, task.unique_id)
-        statement.setString(2, task.type)
-        statement.setString(3, task.title)
-        statement.setString(4, task.description)
-        statement.setLong(5, task.is_sub_task_of)
-        statement.setLong(6, task.due_date)
-        statement.setLong(7, task.start_date)
-        statement.setLong(8, task.end_date)
-        statement.setLong(9, task.reminder_date)
-        statement.setLong(10, task.created_at)
-        statement.setLong(11, task.completed_at)
+        statement.setString(2, task.email)
+        statement.setString(3, task.type)
+        statement.setString(4, task.title)
+        statement.setString(5, task.description)
+        statement.setLong(6, task.is_sub_task_of)
+        statement.setLong(7, task.due_date)
+        statement.setLong(8, task.start_date)
+        statement.setLong(9, task.end_date)
+        statement.setLong(10, task.reminder_date)
+        statement.setLong(11, task.created_at)
+        statement.setLong(12, task.completed_at)
 
         statement.executeUpdate()
 
@@ -151,6 +153,7 @@ class TaskService(private val connection: Connection) {
         while(resultSet.next()){
             val externalModel = ExternalModel(
                 unique_id = resultSet.getLong("UNIQUE_ID"),
+                email = resultSet.getString("EMAIL"),
                 type = resultSet.getString("TYPE"),
                 title = resultSet.getString("TITLE"),
                 description = resultSet.getString("DESCRIPTION"),
